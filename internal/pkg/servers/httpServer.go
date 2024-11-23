@@ -1,9 +1,10 @@
 package servers
 
 import (
-	"fmt"
 	"net/http"
 	"os"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type httpServer struct {
@@ -17,8 +18,9 @@ func NewHttpServer(router *http.ServeMux) *httpServer {
 }
 
 func (serv *httpServer) Start() {
+	log.Infof("HTTP servser listening on port %v", "localhost:"+os.Getenv("HTTP_PORT"))
 	err := http.ListenAndServe(":"+os.Getenv("HTTP_PORT"), serv.router)
 	if err != nil {
-		fmt.Printf("Starting server error occured: %v", err)
+		log.Fatalf("Starting server error occured: %v", err)
 	}
 }

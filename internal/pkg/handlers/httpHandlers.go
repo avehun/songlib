@@ -24,42 +24,46 @@ func ListSongs(w http.ResponseWriter, r *http.Request) {
 	err := json.NewEncoder(w).Encode(songs)
 	if err != nil {
 		http.Error(w, "Server error", 400)
+		return
 	}
 }
 func RetrieveSong(w http.ResponseWriter, r *http.Request) {
 	id, err := parseId(r.URL.Path)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
+		return
 	}
-	var song models.Song
-	song = services.RetrieveSong(id)
+	song := services.RetrieveSong(id)
 	json.NewEncoder(w).Encode(song)
 }
 func DeleteSong(w http.ResponseWriter, r *http.Request) {
 	id, err := parseId(r.URL.Path)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
-	} else {
-		services.DeleteSong(id)
+		return
 	}
+	services.DeleteSong(id)
 }
 func ChangeSong(w http.ResponseWriter, r *http.Request) {
 	id, err := parseId(r.URL.Path)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
-	} else {
-		services.ChangeSong(id)
+		return
 	}
+	services.ChangeSong(id)
+
 }
 func AddSong(w http.ResponseWriter, r *http.Request) {
 	song := models.Song{}
 	req, err := http.NewRequest("GET", os.Getenv("OUTER_SERVICE_URL"), r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
+		return
 	}
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusForbidden)
+		return
 	}
 
 	json.NewDecoder(res.Body).Decode(&song)
@@ -70,7 +74,7 @@ func AddSong(w http.ResponseWriter, r *http.Request) {
 func parseId(url string) (string, error) {
 	splitPath := strings.Split(url, "/")
 	if len(splitPath) < 3 {
-		return "", errors.New("Id required")
+		return "", errors.New("id required")
 	}
 	return splitPath[2], nil
 }

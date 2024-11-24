@@ -135,6 +135,6 @@ func parseId(url string) (string, error) {
 }
 
 type Song struct {
-	Group string `json="group`
-	Song  string `json="song"`
+	Group string `json:"group"`
+	Song  string `json:"song"`
 }

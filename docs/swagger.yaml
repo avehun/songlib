@@ -1,0 +1,125 @@
+basePath: /
+definitions:
+  handlers.Song:
+    properties:
+      group:
+        type: string
+      song:
+        type: string
+    type: object
+  models.Song:
+    properties:
+      group:
+        type: string
+      id:
+        type: string
+      link:
+        type: string
+      releaseDate:
+        type: string
+      song:
+        type: string
+      text:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is an API songs store server.
+  title: Songlib documentation
+  version: "1.0"
+paths:
+  /songs/:
+    get:
+      description: List all songs with pagination and filtering
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Song'
+            type: array
+      summary: Get songs
+      tags:
+      - songs
+    post:
+      consumes:
+      - application/json
+      description: Add a new song
+      parameters:
+      - description: add new song
+        in: body
+        name: song
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.Song'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Add song
+      tags:
+      - songs
+  /songs/{id}:
+    delete:
+      description: Delete a song by id
+      parameters:
+      - description: Song ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+      summary: Delete song
+      tags:
+      - songs
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a song by id
+      parameters:
+      - description: Song ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Song'
+      summary: Retrieve song
+      tags:
+      - songs
+    patch:
+      consumes:
+      - application/json
+      description: Change a song by id
+      parameters:
+      - description: Song ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: change existing song
+        in: body
+        name: song
+        required: true
+        schema:
+          $ref: '#/definitions/models.Song'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Change song
+      tags:
+      - songs
+swagger: "2.0"

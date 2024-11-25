@@ -12,7 +12,6 @@ type SongRepo struct {
 	db *sqlx.DB
 }
 
-// Конструктор для SongRepo
 func NewSongRepo(db *sqlx.DB) *SongRepo {
 
 	song := SongRepo{db: db}

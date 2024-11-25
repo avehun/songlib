@@ -1,10 +1,9 @@
 package services
 
 import (
-	"fmt"
-
 	"github.com/avehun/songlib/internal/pkg/models"
 	"github.com/avehun/songlib/internal/pkg/repo"
+	log "github.com/sirupsen/logrus"
 )
 
 type SongService struct {
@@ -17,23 +16,35 @@ func NewSongService(repo *repo.SongRepo) *SongService {
 	}
 }
 func (s *SongService) ListSongs() []models.Song {
-	println("list songs service")
-	return []models.Song{}
+	songs, err := s.repo.GetAll()
+	if err != nil {
+		log.Errorf("Unable to get all: %v", err)
+	}
+	return songs
 }
 func (s *SongService) RetrieveSong(id string) models.Song {
-	println("retrieve songs service")
 	song, err := s.repo.GetById(id)
 	if err != nil {
-		fmt.Errorf("Unable to get by id: %v", err)
+		log.Errorf("Unable to get by id: %v", err)
 	}
-	return *song
+	return song
 }
 func (s *SongService) DeleteSong(id string) {
-	println("delete song service")
+	err := s.repo.Delete(id)
+	if err != nil {
+		log.Errorf("Unable to delete: %v", err)
+	}
 }
-func (s *SongService) ChangeSong(id string) {
-	println("change song service")
+func (s *SongService) ChangeSong(id string, song models.Song) {
+	err := s.repo.Update(song)
+	if err != nil {
+		log.Errorf("Unable to change: %v", err)
+	}
+
 }
-func (s *SongService) AddSong(models.Song) {
-	println("add song service")
+func (s *SongService) AddSong(song models.Song) {
+	err := s.repo.Create(song)
+	if err != nil {
+		log.Errorf("Unable to add: %v", err)
+	}
 }

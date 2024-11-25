@@ -91,7 +91,9 @@ func (h *HttpHandler) ChangeSong(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 400)
 		return
 	}
-	h.songService.ChangeSong(id)
+	var song models.Song
+	json.NewDecoder(r.Body).Decode(&song)
+	h.songService.ChangeSong(id, song)
 
 }
 

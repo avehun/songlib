@@ -2,12 +2,12 @@ CREATE TABLE IF NOT EXISTS songs (
     id SERIAL PRIMARY KEY,
     "group" VARCHAR(255) NOT NULL,
     song VARCHAR(255) NOT NULL,
-    release_date DATE NOT NULL,
-    "text" TEXT,
-    link VARCHAR(255)
+    release_date TEXT NOT NULL,
+    "text" TEXT NOT NULL,
+    link VARCHAR(255) NOT NULL
 );
 
--- Добавление начальных данных
+-- Nota bene: I generated examples with ChatGPT
 INSERT INTO songs ("group", song, release_date, "text", link)
 VALUES 
     ('The Beatles', 'Hey Jude', '1968-08-26', 'Hey Jude, dont make it bad. Take a sad song and make it better.', 'https://example.com/hey-jude'),

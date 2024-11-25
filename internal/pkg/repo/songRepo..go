@@ -24,27 +24,28 @@ func NewSongRepo(db *sqlx.DB) *SongRepo {
 
 }
 
-func (r *SongRepo) GetById(id string) (*models.Song, error) {
+func (r *SongRepo) GetById(id string) (models.Song, error) {
 	query := `SELECT id, "group", song, release_date, "text", link FROM "songs" WHERE id = $1`
 	var song models.Song
 	err := r.db.Get(&song, query, id)
 	if err != nil {
-		return nil, fmt.Errorf("error fetching song by id: %w", err)
+		return models.Song{}, fmt.Errorf("error fetching song by id: %w", err)
 	}
-	return &song, nil
+	return song, nil
 }
 
 func (r *SongRepo) GetAll() ([]models.Song, error) {
-	query := `SELECT id, "group", song, release_date, text, link FROM "songs"`
+	query := `SELECT id, "group", song, release_date, "text", link FROM "songs"`
 	var songs []models.Song
 	err := r.db.Select(&songs, query)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching all songs: %w", err)
 	}
+	println(songs)
 	return songs, nil
 }
 
-func (r *SongRepo) Create(song *models.Song) error {
+func (r *SongRepo) Create(song models.Song) error {
 	query := `
 		INSERT INTO "songs" ("group", song, release_date, text, link)
 		VALUES ($1, $2, $3, $4, $5) RETURNING id
@@ -63,7 +64,7 @@ func (r *SongRepo) Create(song *models.Song) error {
 	return nil
 }
 
-func (r *SongRepo) Update(song *models.Song) error {
+func (r *SongRepo) Update(song models.Song) error {
 	query := `
 		UPDATE "songs"
 		SET "group" = $1, song = $2, release_date = $3, text = $4, link = $5

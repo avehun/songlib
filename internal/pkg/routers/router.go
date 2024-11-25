@@ -9,8 +9,9 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
-func NewRouter() *http.ServeMux {
+func NewRouter(handler handlers.HttpHandler) *http.ServeMux {
 	r := http.NewServeMux()
+	handlers := handler
 	r.HandleFunc("GET /", httpSwagger.Handler(httpSwagger.URL("http://localhost:"+os.Getenv("HTTP_PORT")+"/swagger/doc.json")))
 	r.HandleFunc("GET /songs/", handlers.ListSongs)
 	r.HandleFunc("GET /songs/{id}/", handlers.RetrieveSong)

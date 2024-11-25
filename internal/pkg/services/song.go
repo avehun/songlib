@@ -1,21 +1,39 @@
 package services
 
-import "github.com/avehun/songlib/internal/pkg/models"
+import (
+	"fmt"
 
-func ListSongs() []models.Song {
+	"github.com/avehun/songlib/internal/pkg/models"
+	"github.com/avehun/songlib/internal/pkg/repo"
+)
+
+type SongService struct {
+	repo *repo.SongRepo
+}
+
+func NewSongService(repo *repo.SongRepo) *SongService {
+	return &SongService{
+		repo: repo,
+	}
+}
+func (s *SongService) ListSongs() []models.Song {
 	println("list songs service")
 	return []models.Song{}
 }
-func RetrieveSong(id string) models.Song {
+func (s *SongService) RetrieveSong(id string) models.Song {
 	println("retrieve songs service")
-	return models.Song{}
+	song, err := s.repo.GetById(id)
+	if err != nil {
+		fmt.Errorf("Unable to get by id: %v", err)
+	}
+	return *song
 }
-func DeleteSong(id string) {
+func (s *SongService) DeleteSong(id string) {
 	println("delete song service")
 }
-func ChangeSong(id string) {
+func (s *SongService) ChangeSong(id string) {
 	println("change song service")
 }
-func AddSong(models.Song) {
+func (s *SongService) AddSong(models.Song) {
 	println("add song service")
 }

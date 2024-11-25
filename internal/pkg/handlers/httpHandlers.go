@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
 	"os"
@@ -15,12 +14,14 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func ListRoutes(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, "GET /songs/\n")
-	io.WriteString(w, "GET /songs/{id}\n")
-	io.WriteString(w, "DELETE /songs/{id}\n")
-	io.WriteString(w, "PUT /songs/{id}\n")
-	io.WriteString(w, "POST /songs/\n")
+type HttpHandler struct {
+	songService *services.SongService
+}
+
+func NewHttpHandler(service *services.SongService) *HttpHandler {
+	return &HttpHandler{
+		songService: service,
+	}
 }
 
 // Songlib godoc
@@ -30,8 +31,8 @@ func ListRoutes(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Success      200  {object}  []models.Song
 // @Router       /songs/ [get]
-func ListSongs(w http.ResponseWriter, r *http.Request) {
-	songs := services.ListSongs()
+func (h *HttpHandler) ListSongs(w http.ResponseWriter, r *http.Request) {
+	songs := h.songService.ListSongs()
 	err := json.NewEncoder(w).Encode(songs)
 	if err != nil {
 		http.Error(w, "Server error", 400)
@@ -48,13 +49,13 @@ func ListSongs(w http.ResponseWriter, r *http.Request) {
 // @Param        id   path      int  true  "Song ID"
 // @Success      200  {object}  models.Song
 // @Router       /songs/{id} [get]
-func RetrieveSong(w http.ResponseWriter, r *http.Request) {
+func (h *HttpHandler) RetrieveSong(w http.ResponseWriter, r *http.Request) {
 	id, err := parseId(r.URL.Path)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return
 	}
-	song := services.RetrieveSong(id)
+	song := h.songService.RetrieveSong(id)
 	json.NewEncoder(w).Encode(song)
 }
 
@@ -65,13 +66,13 @@ func RetrieveSong(w http.ResponseWriter, r *http.Request) {
 // @Param        id   path      int  true  "Song ID"
 // @Success      200
 // @Router       /songs/{id} [delete]
-func DeleteSong(w http.ResponseWriter, r *http.Request) {
+func (h *HttpHandler) DeleteSong(w http.ResponseWriter, r *http.Request) {
 	id, err := parseId(r.URL.Path)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return
 	}
-	services.DeleteSong(id)
+	h.songService.DeleteSong(id)
 }
 
 // Songlib godoc
@@ -84,13 +85,13 @@ func DeleteSong(w http.ResponseWriter, r *http.Request) {
 // @Param        song body models.Song true "change existing song"
 // @Success      200
 // @Router       /songs/{id} [patch]
-func ChangeSong(w http.ResponseWriter, r *http.Request) {
+func (h *HttpHandler) ChangeSong(w http.ResponseWriter, r *http.Request) {
 	id, err := parseId(r.URL.Path)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return
 	}
-	services.ChangeSong(id)
+	h.songService.ChangeSong(id)
 
 }
 
@@ -103,7 +104,7 @@ func ChangeSong(w http.ResponseWriter, r *http.Request) {
 // @Param        song body Song true "add new song"
 // @Success      200
 // @Router       /songs/ [post]
-func AddSong(w http.ResponseWriter, r *http.Request) {
+func (h *HttpHandler) AddSong(w http.ResponseWriter, r *http.Request) {
 	song := models.Song{}
 	json.NewDecoder(r.Body).Decode(&song)
 
@@ -123,7 +124,7 @@ func AddSong(w http.ResponseWriter, r *http.Request) {
 
 	json.NewDecoder(resp.Body).Decode(&song)
 
-	services.AddSong(song)
+	h.songService.AddSong(song)
 }
 
 func parseId(url string) (string, error) {

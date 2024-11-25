@@ -4,3 +4,5 @@
 ```docker compoose up -d ```
 ## then run application
 ```go run main.go```
+###swagger
+```localhost:8080/```

@@ -35,7 +35,7 @@ func (s *SongService) DeleteSong(id string) {
 		log.Errorf("Unable to delete: %v", err)
 	}
 }
-func (s *SongService) ChangeSong(id string, song models.Song) {
+func (s *SongService) ChangeSong(song models.Song) {
 	err := s.repo.Update(song)
 	if err != nil {
 		log.Errorf("Unable to change: %v", err)
